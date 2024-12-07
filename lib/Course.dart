@@ -1,6 +1,8 @@
 import 'dart:convert'; // For JSON decoding
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:projectfeeds/courseDetails.dart';
+import 'package:projectfeeds/post.dart';
 
 class CourseList extends StatefulWidget {
   final String token;
@@ -91,7 +93,8 @@ class _CourseListState extends State<CourseList> {
           courseSubscriptions = subscriptions;
         });
       } else {
-        print('Failed to fetch subscriptions. Status Code: ${response.statusCode}');
+        print(
+            'Failed to fetch subscriptions. Status Code: ${response.statusCode}');
       }
     } catch (e) {
       print('Error fetching subscriptions: $e');
@@ -141,7 +144,7 @@ class _CourseListState extends State<CourseList> {
 
       if (response.statusCode == 200) {
         setState(() {
-          courseSubscriptions.remove(courseId);  // Remove from local state
+          courseSubscriptions.remove(courseId); // Remove from local state
         });
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Unsubscribed successfully')),
@@ -151,14 +154,6 @@ class _CourseListState extends State<CourseList> {
       }
     } catch (e) {
       print('Error unsubscribing: $e');
-    }
-  }
-
-  void handleSubscribeUnsubscribe(int courseId, int sectionId) {
-    if (courseSubscriptions.containsKey(courseId)) {
-      unsubscribeSection(courseId, sectionId);
-    } else {
-      subscribeSection(courseId, sectionId);
     }
   }
 
@@ -224,11 +219,24 @@ class _CourseListState extends State<CourseList> {
                                           ? Colors.green
                                           : Colors.red,
                                     ),
-                                    onPressed: () => handleSubscribeUnsubscribe(
-                                      courseId,
-                                      sectionId,
-                                    ),
+                                    onPressed: () => courseSubscriptions
+                                            .containsKey(courseId)
+                                        ? unsubscribeSection(
+                                            courseId, sectionId)
+                                        : subscribeSection(courseId, sectionId),
                                   ),
+                                  onTap: () {
+                                    // Navigate to detailed course screen
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => PostPage(
+                                            courseId: courseId,
+                                            sectionId: sectionId,
+                                            token: widget.token,
+                                          ),
+                                        ));
+                                  },
                                 );
                               }).toList(),
                       ),

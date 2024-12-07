@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:projectfeeds/Course.dart';
+import 'package:projectfeeds/SubscribedCourses.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
@@ -46,7 +47,13 @@ class _LoginPageState extends State<LoginPage> {
           );
 
           Navigator.push(
-              context, MaterialPageRoute(builder: (context) => CourseList(token: token,)));
+            context,
+            MaterialPageRoute(
+              builder: (context) => SubscribedCoursesPage(
+                token: token,
+              ),
+            ),
+          );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Invalid credentials. Please try again.')),
