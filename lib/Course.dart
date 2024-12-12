@@ -1,6 +1,7 @@
 import 'dart:convert'; // For JSON decoding
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:projectfeeds/SubscribedCourses.dart';
 import 'package:projectfeeds/courseDetails.dart';
 import 'package:projectfeeds/post.dart';
 
@@ -10,10 +11,10 @@ class CourseList extends StatefulWidget {
   const CourseList({super.key, required this.token});
 
   @override
-  State<CourseList> createState() => _CourseListState();
+  State<CourseList> createState() => CourseListState();
 }
 
-class _CourseListState extends State<CourseList> {
+class CourseListState extends State<CourseList> {
   final String courseUrl = "http://feeds.ppu.edu/api/v1/courses";
   final String subscriptionsUrl = "http://feeds.ppu.edu/api/v1/subscriptions";
 
@@ -170,6 +171,84 @@ class _CourseListState extends State<CourseList> {
       appBar: AppBar(
         title: const Text("Courses"),
       ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'PPU Feeds',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              margin: const EdgeInsets.all(0),
+              padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 8.0),
+              child: ListTile(
+                title: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[200],
+                    border: Border.all(color: Colors.grey),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Text(
+                    "All Courses",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ),
+                onTap: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CourseList(token: widget.token),
+                    ),
+                  );
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 8.0),
+              child: ListTile(
+                title: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[200],
+                    border: Border.all(color: Colors.grey),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Text(
+                    "Subscribe to a Course",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ),
+                onTap: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => SubscribedCoursesPage(token: widget.token),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+      
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : courses.isEmpty
@@ -218,7 +297,7 @@ class _CourseListState extends State<CourseList> {
                                       color: isSubscribed
                                           ? Colors.green
                                           : Colors.red,
-                                    ),
+                                    ),  
                                     onPressed: () => courseSubscriptions
                                             .containsKey(courseId)
                                         ? unsubscribeSection(

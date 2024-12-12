@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-import 'package:projectfeeds/CommentService.dart'; // Import the comment service
+import 'package:projectfeeds/CommentService.dart';
+import 'package:projectfeeds/Course.dart';
+import 'package:projectfeeds/SubscribedCourses.dart'; // Import the comment service
 
 class CommentsPage extends StatefulWidget {
   final String token;
@@ -236,6 +238,84 @@ class CommentsPageState extends State<CommentsPage> {
       appBar: AppBar(
         title: const Text("Comments"),
       ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'PPU Feeds',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              margin: const EdgeInsets.all(0),
+              padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 8.0),
+              child: ListTile(
+                title: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[200],
+                    border: Border.all(color: Colors.grey),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Text(
+                    "All Courses",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ),
+                onTap: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CourseList(token: widget.token),
+                    ),
+                  );
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 8.0),
+              child: ListTile(
+                title: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[200],
+                    border: Border.all(color: Colors.grey),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Text(
+                    "Subscribe to a Course",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ),
+                onTap: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => SubscribedCoursesPage(token: widget.token),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+      
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : comments.isEmpty

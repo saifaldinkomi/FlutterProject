@@ -1,8 +1,9 @@
+
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:projectfeeds/Course.dart';
-import 'package:projectfeeds/courseDetails.dart';
+// import 'package:projectfeeds/courseList.dart';
 
 class SubscribedCoursesPage extends StatefulWidget {
   final String token;
@@ -33,7 +34,6 @@ class SubscribedCoursesPageState extends State<SubscribedCoursesPage> {
 
       if (response.statusCode == 200) {
         final dynamic data = jsonDecode(response.body);
-
         if (data is Map<String, dynamic> && data['subscriptions'] != null) {
           List<Map<String, dynamic>> subscriptions = [];
           for (var sub in data['subscriptions']) {
@@ -42,15 +42,14 @@ class SubscribedCoursesPageState extends State<SubscribedCoursesPage> {
               'course_name': sub['course'],
               'section_name': sub['section'],
               'lecturer': sub['lecturer'],
-              'college_name':
-                  "College of IT", // Replace with API data if available
+              'college_name': "College of IT",
               'subscription_date': sub['subscription_date'],
             });
           }
 
           setState(() {
             courseSubscriptions = subscriptions;
-            isLoading = false;  
+            isLoading = false;
           });
         } else {
           print('No subscriptions found!');
@@ -60,8 +59,7 @@ class SubscribedCoursesPageState extends State<SubscribedCoursesPage> {
           });
         }
       } else {
-        print(
-            'Failed to fetch subscriptions. Status Code: ${response.statusCode}');
+        print('Failed to fetch subscriptions. Status Code: ${response.statusCode}');
         setState(() {
           isLoading = false;
         });
@@ -79,19 +77,86 @@ class SubscribedCoursesPageState extends State<SubscribedCoursesPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Subscribed Courses"),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.list),
-            onPressed: () {
-              // Navigate to the SubscribedCoursesPage
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => CourseList(token: widget.token)));
-            },
-          ),
-        ],
       ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'PPU Feeds',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              margin: const EdgeInsets.all(0),
+              padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 8.0),
+              child: ListTile(
+                title: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[200],
+                    border: Border.all(color: Colors.grey),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Text(
+                    "All Courses",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ),
+                onTap: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CourseList(token: widget.token),
+                    ),
+                  );
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 8.0),
+              child: ListTile(
+                title: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[200],
+                    border: Border.all(color: Colors.grey),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Text(
+                    "Subscribe to a Course",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ),
+                onTap: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => SubscribedCoursesPage(token: widget.token),
+                    )
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+      
+      
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : courseSubscriptions.isEmpty
@@ -111,12 +176,6 @@ class SubscribedCoursesPageState extends State<SubscribedCoursesPage> {
                         trailing: Text(subscription['college_name']),
                         onTap: () {
                           // Navigate to detailed course screen
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => CourseDetailPage(
-                                        courseDetails: subscription,
-                                      )));
                         },
                       ),
                     );

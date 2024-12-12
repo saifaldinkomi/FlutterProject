@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:projectfeeds/PostService%20.dart';
 import 'package:projectfeeds/CommentsPage.dart';
+import 'package:projectfeeds/Course.dart';
+import 'package:projectfeeds/PostService%20.dart';
+import 'package:projectfeeds/SubscribedCourses.dart';
 
 class PostPage extends StatefulWidget {
   final String token;
@@ -38,7 +40,7 @@ class PostPageState extends State<PostPage> {
 
       if (response != null) {
         setState(() {
-          posts = response['posts'];
+          posts = response['posts'] ?? []; // Handle null 'posts'
         });
       } else {
         print("Failed to fetch posts.");
@@ -54,8 +56,13 @@ class PostPageState extends State<PostPage> {
 
   // Add a post
   Future<void> addPost() async {
-    final postContent = postController.text;
-    if (postContent.isEmpty) return;
+    final postContent = postController.text.trim();
+    if (postContent.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Post content cannot be empty")),
+      );
+      return;
+    }
 
     setState(() {
       isLoading = true;
@@ -71,7 +78,12 @@ class PostPageState extends State<PostPage> {
 
       if (response != null) {
         setState(() {
-          posts.insert(0, response['post']);
+          posts.insert(0, {
+            'id': response['post_id'],
+            'author': 'You',
+            'body': postContent,
+            'date_posted': DateTime.now().toString(),
+          });
         });
         postController.clear();
         ScaffoldMessenger.of(context).showSnackBar(
@@ -79,6 +91,9 @@ class PostPageState extends State<PostPage> {
         );
       } else {
         print("Failed to add post.");
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Failed to add post")),
+        );
       }
     } catch (e) {
       print('Error adding post: $e');
@@ -104,6 +119,83 @@ class PostPageState extends State<PostPage> {
       appBar: AppBar(
         title: const Text("Post Page"),
       ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'PPU Feeds',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              margin: const EdgeInsets.all(0),
+              padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 8.0),
+              child: ListTile(
+                title: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[200],
+                    border: Border.all(color: Colors.grey),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Text(
+                    "All Courses",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ),
+                onTap: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CourseList(token: widget.token),
+                    ),
+                  );
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 8.0),
+              child: ListTile(
+                title: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[200],
+                    border: Border.all(color: Colors.grey),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Text(
+                    "Subscribe to a Course",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ),
+                onTap: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => SubscribedCoursesPage(token: widget.token),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : posts.isEmpty
@@ -118,13 +210,13 @@ class PostPageState extends State<PostPage> {
                       elevation: 4,
                       margin: const EdgeInsets.all(8),
                       child: ListTile(
-                        title: Text(post['author']),
+                        title: Text(post['author'] ?? 'Unknown Author'),
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(post['body']),
+                            Text(post['body'] ?? 'No content'),
                             const SizedBox(height: 8),
-                            Text("Posted on: ${post['date_posted']}"),
+                            Text("Posted on: ${post['date_posted'] ?? 'Unknown date'}"),
                           ],
                         ),
                         trailing: IconButton(
