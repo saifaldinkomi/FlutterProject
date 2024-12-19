@@ -1,72 +1,138 @@
-// course_view_model.dart
+
+// import 'package:flutter/material.dart';
+// import 'package:projectfeeds/models/course_model.dart';
+
+// class CourseViewModel extends ChangeNotifier {
+//   final CourseModel _courseModel;
+//   final String token;
+//   List<dynamic> courses = [];
+//   Map<int, List<dynamic>> sections = {};
+//   Map<int, Map<String, dynamic>> courseSubscriptions = {};
+//   bool isLoading = false;
+
+//   CourseViewModel({required this.token}) : _courseModel = CourseModel();
+
+//   Future<void> loadCourses() async {
+//     isLoading = true;
+//     notifyListeners();
+//     try {
+//       courses = await _courseModel.getCourses(token);
+//       notifyListeners();
+//     } catch (e) {
+//       print('Error loading courses: $e');
+//     } finally {
+//       isLoading = false;
+//       notifyListeners();
+//     }
+//   }
+
+//   Future<void> loadSections(int courseId) async {
+//     try {
+//       final courseSections = await _courseModel.getSections(token, courseId);
+//       sections[courseId] = courseSections;
+//       notifyListeners();
+//     } catch (e) {
+//       print('Error loading sections: $e');
+//     }
+//   }
+
+//   Future<void> loadSubscriptions() async {
+//     try {
+//       courseSubscriptions = await _courseModel.getSubscriptions(token);
+//       notifyListeners();
+//     } catch (e) {
+//       print('Error loading subscriptions: $e');
+//     }
+//   }
+
+//   Future<void> subscribe(int courseId, int sectionId) async {
+//     try {
+//       await _courseModel.subscribeSection(token, courseId, sectionId);
+//       await loadSubscriptions();
+//     } catch (e) {
+//       print('Error subscribing: $e');
+//     }
+//   }
+
+//   Future<void> unsubscribe(int courseId, int sectionId) async {
+//     final subscriptionId = courseSubscriptions[courseId]?['subscription_id'];
+//     if (subscriptionId != null) {
+//       try {
+//         await _courseModel.unsubscribeSection(token, courseId, sectionId, subscriptionId);
+//         await loadSubscriptions();
+//       } catch (e) {
+//         print('Error unsubscribing: $e');
+//       }
+//     }
+//   }
+// }
+
+
 
 import 'package:flutter/material.dart';
-// import 'package:projectfeeds/course_model.dart';
 import 'package:projectfeeds/models/course_model.dart';
 
 class CourseViewModel extends ChangeNotifier {
-  final CourseModel courseModel;
+  final CourseModel _courseModel;
   final String token;
-  bool isLoading = false;
   List<dynamic> courses = [];
   Map<int, List<dynamic>> sections = {};
-  Map<int, Map<String, dynamic>> subscriptions = {};
+  Map<int, Map<String, dynamic>> sectionSubscriptions = {};
+  bool isLoading = false;
 
-  CourseViewModel({required this.token, required this.courseModel});
+  CourseViewModel({required this.token}) : _courseModel = CourseModel();
 
-  Future<void> fetchCourses() async {
+  Future<void> loadCourses() async {
     isLoading = true;
     notifyListeners();
-
     try {
-      courses = await courseModel.fetchCourses(token);
+      courses = await _courseModel.getCourses(token);
       notifyListeners();
     } catch (e) {
-      print("Error fetching courses: $e");
+      print('Error loading courses: $e');
     } finally {
       isLoading = false;
       notifyListeners();
     }
   }
 
-  Future<void> fetchSubscriptions() async {
+  Future<void> loadSections(int courseId) async {
     try {
-      subscriptions = await courseModel.fetchSubscriptions(token);
+      final courseSections = await _courseModel.getSections(token, courseId);
+      sections[courseId] = courseSections;
       notifyListeners();
     } catch (e) {
-      print("Error fetching subscriptions: $e");
+      print('Error loading sections: $e');
     }
   }
 
-  Future<void> fetchSections(int courseId) async {
+  Future<void> loadSubscriptions() async {
     try {
-      final sectionsForCourse = await courseModel.fetchSections(courseId, token);
-      sections[courseId] = sectionsForCourse;
+      sectionSubscriptions = await _courseModel.getSubscriptions(token);
       notifyListeners();
     } catch (e) {
-      print("Error fetching sections: $e");
+      print('Error loading subscriptions: $e');
     }
   }
 
   Future<void> subscribe(int courseId, int sectionId) async {
     try {
-      await courseModel.subscribeToSection(courseId, sectionId, token);
-      subscriptions[courseId] = {
-        'section_id': sectionId,
-      };
-      notifyListeners();
+      await _courseModel.subscribeSection(token, courseId, sectionId);
+      await loadSubscriptions();
     } catch (e) {
-      print("Error subscribing: $e");
+      print('Error subscribing: $e');
     }
   }
 
   Future<void> unsubscribe(int courseId, int sectionId) async {
-    try {
-      await courseModel.unsubscribeFromSection(courseId, sectionId, token);
-      subscriptions.remove(courseId);
-      notifyListeners();
-    } catch (e) {
-      print("Error unsubscribing: $e");
+    final subscriptionId = sectionSubscriptions[sectionId]?['subscription_id'];
+    if (subscriptionId != null) {
+      try {
+        await _courseModel.unsubscribeSection(token, courseId, sectionId, subscriptionId);
+        await loadSubscriptions();
+      } catch (e) {
+        print('Error unsubscribing: $e');
+      }
     }
   }
 }

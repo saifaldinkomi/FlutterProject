@@ -1,29 +1,13 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-
 class LoginModel {
-  final String loginUrl = "http://feeds.ppu.edu/api/login";
+  final String email;
+  final String password;
 
-  Future<String?> login(String email, String password) async {
-    try {
-      final response = await http.post(
-        Uri.parse(loginUrl),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode({
-          "email": email,
-          "password": password,
-        }),
-      );
+  LoginModel({required this.email, required this.password});
 
-      if (response.statusCode == 200) {
-        dynamic jsonObject = jsonDecode(response.body);
-        if (jsonObject['status'] == 'success') {
-          return jsonObject['session_token'];
-        }
-      }
-      return null;
-    } catch (e) {
-      throw Exception('Error logging in: $e');
-    }
+  Map<String, dynamic> toJson() {
+    return {
+      'email': email,
+      'password': password,
+    };
   }
 }

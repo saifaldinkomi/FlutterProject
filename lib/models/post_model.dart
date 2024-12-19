@@ -15,8 +15,8 @@ class Post {
     return Post(
       id: json['id'],
       author: json['author'] ?? 'Unknown Author',
-      body: json['body'] ?? 'No content',
-      datePosted: json['date_posted'] ?? 'Unknown date',
+      body: json['body'] ?? '',
+      datePosted: json['date_posted'] ?? '',
     );
   }
 }
