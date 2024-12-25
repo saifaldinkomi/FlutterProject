@@ -16,10 +16,10 @@ class SubscribedCoursesViewModel extends ChangeNotifier {
     errorMessage = null;
     notifyListeners();
     const String subscriptionsUrl = "http://feeds.ppu.edu/api/v1/subscriptions";
- print("--------------------------------------------------");
+    print("--------------------------------------------------");
 
- print("git data");
- print("--------------------------------------------------");
+    print("git data");
+    print("--------------------------------------------------");
 
     try {
       final response = await http.get(
@@ -31,7 +31,8 @@ class SubscribedCoursesViewModel extends ChangeNotifier {
         final data = jsonDecode(response.body);
         if (data is Map<String, dynamic> && data['subscriptions'] != null) {
           courseSubscriptions = List<CourseSubscription>.from(
-            data['subscriptions'].map((sub) => CourseSubscription.fromJson(sub)),
+            data['subscriptions']
+                .map((sub) => CourseSubscription.fromJson(sub)),
           );
         } else {
           courseSubscriptions = [];

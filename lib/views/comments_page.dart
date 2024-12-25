@@ -38,7 +38,7 @@ class _CommentsPageState extends State<CommentsPage> {
 
   void _refreshComments() {
     setState(() {
-      _viewModel.fetchComments(); // Refresh the comments after adding, deleting, or editing
+      _viewModel.fetchComments(); 
     });
   }
 

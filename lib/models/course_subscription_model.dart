@@ -21,7 +21,7 @@ class CourseSubscription {
       courseName: json['course'] ?? 'N/A',
       sectionName: json['section'] ?? 'N/A',
       lecturer: json['lecturer'] ?? 'N/A',
-      collegeName: "College of IT", // Static value
+      collegeName: "College of IT", 
       subscriptionDate: json['subscription_date'] ?? 'N/A',
     );
   }

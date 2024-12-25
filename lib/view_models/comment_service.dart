@@ -52,35 +52,12 @@ class CommentService {
     }
   }
 
-  // static Future<void> editComment(String token, int courseId, int sectionId,
-  //     int postId, String body, int commentsId) async {
-  //   final String url =
-  //       "$baseUrl/courses/$courseId/sections/$sectionId/posts/$postId/comments/$commentsId";
-  //   try {
-  //     final response = await http.post(
-  //       Uri.parse(url),
-  //       headers: {
-  //         "Authorization": token,
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: jsonEncode({"body": body}),
-  //     );
-
-  //     if (response.statusCode != 200) {
-  //       throw Exception('Failed to add comment');
-  //     }
-  //   } catch (e) {
-  //     throw Exception('Error adding comment: $e');
-  //   }
-  // }
-
   static Future<void> editComment(String token, int courseId, int sectionId,
       int postId, String body, int commentsId) async {
     final String url =
         "$baseUrl/courses/$courseId/sections/$sectionId/posts/$postId/comments/$commentsId";
     try {
       final response = await http.put(
-        // Changed from post to put
         Uri.parse(url),
         headers: {
           "Authorization": token,
